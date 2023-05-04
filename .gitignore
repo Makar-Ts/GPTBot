@@ -1,0 +1,7 @@
+
+voices/*
+voices_converted/*
+logs/*
+images/*
+__pycache__/
+settings.ini
