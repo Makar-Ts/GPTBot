@@ -5,3 +5,4 @@ logs/*
 images/*
 __pycache__/
 settings.ini
+database/*

@@ -85,7 +85,7 @@ def message_operator(message, thread_id):
                     messages.append({"role": 'user', "content": message.text}) #добавляем запрос пользователя в историю
                     
                     base.set_busy(id, 1)
-                    ask = gpt.ask(message.text, model, messages) #делаем запрос
+                    ask = gpt.ask(model, question=message.text, messages=messages) #делаем запрос
                     
                     messages.append({"role": 'system', "content": ask}) #добавляем ответ gpt в историю
                     

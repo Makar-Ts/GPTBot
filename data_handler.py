@@ -39,7 +39,7 @@ class Speaker:
         con.commit()
         
         self.logger.log(self.thread_id, "LOG {0}: create_user".format(id))
-    def has_user(self, id : int):
+    def has_user(self, id : int) -> int:
         data = con.execute("""
                     SELECT * FROM users WHERE id=?;
                 """, (id,))
@@ -56,7 +56,7 @@ class Speaker:
         con.commit()
         
         self.logger.log(self.thread_id, "LOG {0}: set_busy {1}".format(id, status))
-    def is_busy(self, id : int):
+    def is_busy(self, id : int) -> bool:
         data = con.execute("""
                     SELECT is_busy FROM users WHERE id=?;
                 """, (id,))
@@ -68,7 +68,7 @@ class Speaker:
         return bool(busy)
     
     #Операции с сообщениями-------------------------------------------------
-    def get_messages(self, id : int):
+    def get_messages(self, id : int) -> dict:
         data = con.execute("""
                     SELECT messages FROM users WHERE id=?;
                 """, (id,))
@@ -94,7 +94,7 @@ class Speaker:
         self.logger.log(self.thread_id, "LOG {0}: clear_messages".format(id))
     
     #Операции с моделью пользователя---------------------------------------
-    def get_user_model(self, id : int):
+    def get_user_model(self, id : int) -> str:
         data = con.execute("""
                     SELECT model_used FROM users WHERE id=?;
                 """, (id,))
