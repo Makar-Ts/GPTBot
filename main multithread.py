@@ -19,6 +19,7 @@ import logger
 import atexit
 import json
 import datetime
+import time
 from threading import Thread
 import subprocess
 
@@ -201,4 +202,11 @@ def voice_handler(message):
 
 
 atexit.register(log.close_log) #при закрытии процесса
-bot.polling(none_stop=True, interval=0) #запрос к телеграму о новых сообщениях
+
+while True:
+    try:
+        bot.polling(none_stop=True) #запрос к телеграму о новых сообщениях
+    except Exception as _ex:
+        print("Update connection")
+        log.log(-1, f"Update connection")
+        time.sleep(1)
