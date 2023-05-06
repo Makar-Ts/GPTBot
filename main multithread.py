@@ -185,20 +185,20 @@ def voice_operator(message, thread_id):
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message): #при получении сообщения
     global thread_counter
+    thread_counter += 1
     
     log.log(thread_counter, f"new thread with user id {message.from_user.id}")
     mes_thread = Thread(target=message_operator, args=(message,thread_counter,)) #запуск оператора сообщений в отдельном потоке
     mes_thread.start()
-    thread_counter += 1
 
 @bot.message_handler(content_types=['voice'])
 def voice_handler(message):
     global thread_counter
+    thread_counter += 1
     
     log.log(thread_counter, f"new thread with user id {message.from_user.id}")
     mes_thread = Thread(target=voice_operator, args=(message,thread_counter,)) #запуск оператора сообщений в отдельном потоке
     mes_thread.start()
-    thread_counter += 1
 
 
 atexit.register(log.close_log) #при закрытии процесса
@@ -207,6 +207,5 @@ while True:
     try:
         bot.polling(none_stop=True) #запрос к телеграму о новых сообщениях
     except Exception as _ex:
-        print("Update connection")
         log.log(-1, f"Update connection")
         time.sleep(1)

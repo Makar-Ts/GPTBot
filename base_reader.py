@@ -1,6 +1,6 @@
 import data_handler
 
-bot = data_handler.Speaker()
+bot = data_handler.Speaker(-1, None)
 
 while True:
     inp = int(input())

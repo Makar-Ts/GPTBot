@@ -25,7 +25,7 @@ with con:
     
 
 class Speaker:
-    def __init__(self, thread_id, logger):
+    def __init__(self, thread_id, logger=None):
         self.thread_id = thread_id
         self.logger = logger
     
@@ -38,7 +38,7 @@ class Speaker:
                                                      ]), "gpt-3.5-turbo"))
         con.commit()
         
-        self.logger.log(self.thread_id, "LOG {0}: create_user".format(id))
+        if (self.logger): self.logger.log(self.thread_id, "LOG {0}: create_user".format(id))
     def has_user(self, id : int) -> int:
         data = con.execute("""
                     SELECT * FROM users WHERE id=?;
@@ -46,7 +46,7 @@ class Speaker:
         
         has = int(data.fetchone() != None)
         
-        self.logger.log(self.thread_id, "LOG {0}: has user {1}".format(id, has))
+        if (self.logger): self.logger.log(self.thread_id, "LOG {0}: has user {1}".format(id, has))
         
         return has
     def set_busy(self, id : int, status : int):
@@ -55,7 +55,7 @@ class Speaker:
                 """, (status, id))
         con.commit()
         
-        self.logger.log(self.thread_id, "LOG {0}: set_busy {1}".format(id, status))
+        if (self.logger): self.logger.log(self.thread_id, "LOG {0}: set_busy {1}".format(id, status))
     def is_busy(self, id : int) -> bool:
         data = con.execute("""
                     SELECT is_busy FROM users WHERE id=?;
@@ -63,7 +63,7 @@ class Speaker:
         
         busy = data.fetchone()[0]
         
-        self.logger.log(self.thread_id, "LOG {0}: is_busy {1}".format(id, bool(busy)))
+        if (self.logger): self.logger.log(self.thread_id, "LOG {0}: is_busy {1}".format(id, bool(busy)))
         
         return bool(busy)
     
@@ -73,7 +73,7 @@ class Speaker:
                     SELECT messages FROM users WHERE id=?;
                 """, (id,))
         
-        self.logger.log(self.thread_id, "LOG {0}: get_messages".format(id))
+        if (self.logger): self.logger.log(self.thread_id, "LOG {0}: get_messages".format(id))
         
         return json.loads(data.fetchone()[0])
     def set_messages(self, id : int, messages):
@@ -91,7 +91,7 @@ class Speaker:
                                                      ]), id))
         con.commit()
         
-        self.logger.log(self.thread_id, "LOG {0}: clear_messages".format(id))
+        if (self.logger): self.logger.log(self.thread_id, "LOG {0}: clear_messages".format(id))
     
     #Операции с моделью пользователя---------------------------------------
     def get_user_model(self, id : int) -> str:
@@ -101,7 +101,7 @@ class Speaker:
         
         model = data.fetchone()[0]
         
-        self.logger.log(self.thread_id, "LOG {0}: get_user_model ({1})".format(id, model))
+        if (self.logger): self.logger.log(self.thread_id, "LOG {0}: get_user_model ({1})".format(id, model))
         
         return model
     def set_user_model(self, id : int, model : str):
@@ -110,5 +110,5 @@ class Speaker:
                 """, (model, id))
         con.commit()
         
-        self.logger.log(self.thread_id, "LOG {0}: set_model {1}".format(id, model))
+        if (self.logger): self.logger.log(self.thread_id, "LOG {0}: set_model {1}".format(id, model))
         
