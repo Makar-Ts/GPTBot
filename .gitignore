@@ -3,6 +3,13 @@ voices/*
 voices_converted/*
 logs/*
 images/*
+images_saved/*
 __pycache__/
 settings.ini
 database/*
+
+!voices/_about
+!voices_converted/_about
+!logs/_about
+!images/_about
+!images_saved/_about

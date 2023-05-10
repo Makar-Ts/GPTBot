@@ -62,6 +62,24 @@ class GPTRequester:
         out.write(resource.read()) #скачиваем и записываем на компьютер
         out.close()
     
+    def edit_image(self, promt, input_img_path, output_img_path) -> None:
+        """Генерация изображения по запросу
+           |    promt           - запрос
+           |    input_img_path  - путь до входного изображения
+           |    output_img_path - путь для сохранения изображения"""
+        
+        openai.Image.create_edit(
+            image=open(input_img_path, "rb"),
+            prompt=promt,
+            size="1024x1024"
+        )
+        image_url = response['data'][0]['url'] #получаем url картинки
+        
+        resource = urllib.request.urlopen(image_url) #открываем картинку
+        out = open(output_img_path, 'wb') 
+        out.write(resource.read()) #скачиваем и записываем на компьютер
+        out.close()
+    
     def decode_voice(self, file) -> str:
         """Декодирование голоса в текст
            |    file - файл mp3 или wav для декодирования"""

@@ -17,17 +17,24 @@ class MessageOperator:
         self.SAVED_VOICES_FOLDER_PATH = str(home_path)+config["Paths"]["downloaded_voices"].replace('"', "")
         self.MP3_VOICES_FOLDER_PATH = str(home_path)+config["Paths"]["converted_voices"].replace('"', "")
         self.MAX_MESSAGES_LENGTH = int(config["SQLiteDatabase"]["messages_max_size"].replace('"', ""))
-        self.GENERATED_IMG_FOLDER_PATH = str(sys.path[0])+config["Paths"]["generated_images"].replace('"', "")
-    
+        self.GENERATED_IMG_FOLDER_PATH = str(home_path)+config["Paths"]["generated_images"].replace('"', "")
+        self.SAVED_IMG_FOLDER_PATH = str(home_path)+config["Paths"]["saved_images"].replace('"', "")
+        
     #Обработка сообщений------------------------------------------------------------------
     def message(self, message, thread_id):
+        """Обрабатывает сообщение
+
+        Args:
+            message (telebot.message): класс сообщения
+            thread_id (int): id потока
+        """        
         id = message.from_user.id #получение id пользователя
         base = data_handler.Speaker(thread_id, self.log)
         
         try:
             is_registered = base.has_user(id) #проверка зарегестрирован ли пользователь
             
-            if (is_registered == 0): 
+            if (is_registered == 0 and (message.content_type == "text" and message.text != "/start")): 
                 self.bot.send_message(id, "Для начала введите /start")
                 
                 self.log.log(thread_id, f"close thread")
@@ -142,7 +149,28 @@ class MessageOperator:
                 else:
                     self.bot.send_message(id, "Ваш запрос обрабатывается...")
             elif (message.content_type == "photo"):
-                pass
+                if (base.is_busy(id) == 0):
+                    model = base.get_user_model(id)
+                    
+                    if (model == "DALL-E"):
+                        base.set_busy(id, 1)
+                        
+                        raw = str(datetime.datetime.now()).replace(":", ".").replace(" ", "_")+f"id{id}"
+                        name = self.SAVED_IMG_FOLDER_PATH+raw+".png"
+                        output_name = self.GENERATED_IMG_FOLDER_PATH+raw+".png"
+                        file_info = self.bot.get_file(message.photo[2].file_id)
+                        downloaded_file = self.bot.download_file(file_info.file_path)
+                        with open(name,'wb') as new_file:
+                            new_file.write(downloaded_file)
+                        
+                        self.gpt.edit_image(message.caption, name, output_name)
+                        
+                        self.bot.send_photo(id, photo=open(output_name, 'rb')) #открываем и отправляем фото
+                        base.set_busy(id, 0)
+                    else:
+                        self.bot.send_message(id, "Текущая модель не может обрабатывать фотографии")
+                else:
+                    self.bot.send_message(id, "Ваш запрос обрабатывается...")
         except BaseException as e:
             self.log.log(thread_id, "ERROR {0}: {1}".format(id, e))
             
